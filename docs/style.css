@@ -62,7 +62,7 @@ body,
 }
 .background{
   background-image:url(https://cdn.discordapp.com/attachments/185046628732895232/204497752091000832/bg3.svg);
-  background-size:50%;
+  background-size:100%;
 }
 .step{
   font-smooth: auto;
