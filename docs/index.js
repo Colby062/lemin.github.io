@@ -1,263 +1,246 @@
-const cardsContainer = document.querySelector(".card-carousel");
-const cardsController = document.querySelector(".card-carousel + .card-controller")
+//////////////////////////////////////////////////////////////
+function onCreate() {
+  ShowToast();
+}
+//▬▬▬▬▬▬▬▬▬▬
+     // TOAST
+//▬▬▬▬▬▬▬▬▬▬
+function ShowToast() {
+  var x = document.getElementById("Toast");
+  x.className = "show";
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3900);
+}
+//▬▬▬▬▬▬▬▬▬▬
+     // FPS WEBS
+//▬▬▬▬▬▬▬▬▬▬
+ var fps = document.getElementById("fps");
 
-class DraggingEvent{
-    constructor(target = undefined) {
-        this.target = target;
-    }
+var startTime = Date.now();
 
-    event(callback){
-        let handler;
-        this.target.addEventListener("mousedown", e => {
-            e.preventDefault()
-            handler = callback(e)
-            window.addEventListener("mousemove", handler)
-            document.addEventListener("mouseleave", clearDraggingEvent)
-            window.addEventListener("mouseup", clearDraggingEvent)
-            function clearDraggingEvent() {
-                window.removeEventListener("mousemove", handler)
-                window.removeEventListener("mouseup", clearDraggingEvent)
-                document.removeEventListener("mouseleave", clearDraggingEvent)
-                handler(null)
-            }
-        })
+var frame = 0;
 
-        this.target.addEventListener("touchstart", e =>{
-            handler = callback(e)
-            window.addEventListener("touchmove", handler)
-            window.addEventListener("touchend", clearDraggingEvent)
-            document.body.addEventListener("mouseleave", clearDraggingEvent)
+function tick() {
 
-            function clearDraggingEvent() {
-                window.removeEventListener("touchmove", handler)
-                window.removeEventListener("touchend", clearDraggingEvent)
+  var time = Date.now();
 
-                handler(null)
-            }
-        })
-    }
+  frame++;
 
-    getDistance(callback) {
-        function distanceInit(e1){
-            let startingX, startingY;
-            if("touches" in e1){
-                startingX = e1.touches[0].clientX
-                startingY = e1.touches[0].clientY
-            } else{
-                startingX = e1.clientX
-                startingY = e1.clientY
-            }
-            return function (e2){
-                if(e2 === null) {
-                    return callback(null)
-                } else{
-                    if("touches" in e2){
-                        return callback({
-                            x: e2.touches[0].clientX - startingX,
-                            y: e2.touches[0].clientY - startingY
-                        })
-                    } else{
-                        return callback({
-                            x: e2.clientX - startingX,
-                            y: e2.clientY - startingY
-                        })
-                    }
-                }
-            }
-        }
-        this.event(distanceInit)
-    }
+  if (time - startTime > 1000) {
+
+      fps.innerHTML = (frame / ((time - startTime) / 1000)).toFixed(1);
+
+      startTime = time;
+
+      frame = 0;
+
+	}  window.requestAnimationFrame(tick);
+
 }
 
-class CardCarousel extends DraggingEvent{
-    constructor(container, controller = undefined){
-        super(container)
-        this.container = container
-        this.controllerElement = controller
-        this.cards = container.querySelectorAll(".card")
-        this.centerIndex = (this.cards.length - 1) / 2;
-        this.cardWidth = this.cards[0].offsetWidth / this.container.offsetWidth * 100
-        this.xScale = {};
+tick();
 
-        window.addEventListener("resize", this.updateCardWidth.bind(this))
+//▬▬▬▬▬▬▬▬▬▬
+     // LINK
+//▬▬▬▬▬▬▬▬▬▬
 
-        if(this.controllerElement){
-            this.controllerElement.addEventListener("keydown", this.controller.bind(this))
-        }
-
-        this.build()
-        super.getDistance(this.moveCards.bind(this))
-    }
-
-    updateCardWidth(){
-        this.cardWidth = this.cards[0].offsetWidth / this.container.offsetWidth * 100
-        this.build()
-    }
-
-    build(fix = 0){
-        for (let i = 0; i < this.cards.length; i++) {
-            const x = i - this.centerIndex;
-            const scale = this.calcScale(x)
-            const scale2 = this.calcScale2(x)
-            const zIndex = -(Math.abs(i - this.centerIndex))
-            const leftPos = this.calcPos(x, scale2)
-            this.xScale[x] = this.cards[i]
-            this.updateCards(this.cards[i], {
-                x: x,
-                scale: scale,
-                leftPos: leftPos,
-                zIndex: zIndex
-            })
-        }
-    }
-
-    controller(e){
-        const temp = { ...this.xScale };
-        if(e.keyCode === 39){
-            for (let x in this.xScale) {
-                const newX = (parseInt(x) - 1 < -this.centerIndex) ? this.centerIndex : parseInt(x) - 1;
-                temp[newX] = this.xScale[x]
-            }
-        }
-        if(e.keyCode == 37){
-            for (let x in this.xScale){
-                const newX = (parseInt(x) + 1 > this.centerIndex) ? -this.centerIndex : parseInt(x) + 1;
-                temp[newX] = this.xScale[x]
-            }
-        }
-
-        this.xScale = temp;
-
-        for(let x in temp) {
-            const scale = this.calcScale(x),
-                scale2 = this.calcScale2(x),
-                leftPos = this.calcPos(x, scale2),
-                zIndex = -Math.abs(x)
-
-            this.updateCards(this.xScale[x], {
-                x: x,
-                scale: scale,
-                leftPos: leftPos,
-                zIndex: zIndex
-            })
-        }
-    }
-
-    calcPos(x, scale){
-        let formula;
-        if (x < 0){
-            formula = (scale * 100 - this.cardWidth) / 2
-            return formula
-        } else if (x > 0){
-            formula = 100 - (scale * 100 + this.cardWidth) / 2
-            return formula
-        } else{
-            formula = 100 - (scale * 100 + this.cardWidth) / 2
-            return formula
-        }
-    }
-
-    updateCards(card, data){
-        if (data.x || data.x == 0){
-            card.setAttribute("data-x", data.x)
-        }
-        if (data.scale || data.scale == 0){
-            card.style.transform = `scale(${data.scale})`
-
-            if (data.scale == 0){
-                card.style.opacity = data.scale
-            } else{
-                card.style.opacity = 1;
-            }
-        }
-
-        if(data.leftPos){
-            card.style.left = `${data.leftPos}%`
-        }
-
-        if(data.zIndex || data.zIndex == 0){
-            if(data.zIndex == 0) {
-                card.classList.add("highlight")
-            } else{
-                card.classList.remove("highlight")
-            }
-            card.style.zIndex = data.zIndex
-        }
-    }
-
-    calcScale2(x){
-        let formula;
-        if(x <= 0){
-            formula = 1 - -1 / 5 * x
-            return formula
-        } else if(x > 0){
-            formula = 1 - 1 / 5 * x
-            return formula
-        }
-    }
-
-    calcScale(x){
-        const formula = 1 - 1 / 5 * Math.pow(x, 2)
-        if(formula <= 0){
-            return 0
-        } else{
-            return formula
-        }
-    }
-
-    checkOrdering(card, x, xDist){
-        const original = parseInt(card.dataset.x)
-        const rounded = Math.round(xDist)
-        let newX = x
-
-        if (x !== x + rounded){
-            if(x + rounded > original){
-                if(x + rounded > this.centerIndex){
-                    newX = ((x + rounded - 1) - this.centerIndex) - rounded + -this.centerIndex
-                }
-            } else if (x + rounded < original){
-                if(x + rounded < -this.centerIndex){
-                    newX = ((x + rounded + 1) + this.centerIndex) - rounded + this.centerIndex
-                }
-            }
-            this.xScale[newX + rounded] = card;
-        }
-
-        const temp = -Math.abs(newX + rounded)
-        this.updateCards(card, { zIndex: temp })
-        return newX;
-    }
-
-    moveCards(data){
-        let xDist;
-        if(data != null){
-            this.container.classList.remove("smooth-return")
-            xDist = data.x / 250;
-        } else{
-            this.container.classList.add("smooth-return")
-            xDist = 0;
-
-            for (let x in this.xScale){
-                this.updateCards(this.xScale[x], {
-                    x: x,
-                    zIndex: Math.abs(Math.abs(x) - this.centerIndex)
-                })
-            }
-        }
-
-        for(let i = 0; i < this.cards.length; i++){
-            const x = this.checkOrdering(this.cards[i], parseInt(this.cards[i].dataset.x), xDist),
-                scale = this.calcScale(x + xDist),
-                scale2 = this.calcScale2(x + xDist),
-                leftPos = this.calcPos(x + xDist, scale2)
-
-
-            this.updateCards(this.cards[i], {
-                scale: scale,
-                leftPos: leftPos
-            })
-        }
-    }
+function Youtube() {
+  setTimeout(function() {
+    window.open('https://www.youtube.com/channel/UCiSP9FWliPIwG-w59dJdilQ', 'ultimate')},
+  100);
+}
+function Facebook() {
+  setTimeout(function() {
+    window.open('https://www.facebook.com/100035052735014', 'ultimate')},
+  100);
+}
+function Discord() {
+  setTimeout(function() {
+    window.open('https://dsc.bio/WusThanhDieu', 'ultimate')},
+  100);
+}
+function Telegram() {
+  setTimeout(function() {
+    window.open('https://t.me/ThanhDieuChannel', 'ultimate')},
+  100);
 }
 
-const carousel = new CardCarousel(cardsContainer)
+function DarkMode() {
+  var element = document.body;
+  element.classList.toggle("dark-mode");
+}
+//▬▬▬▬▬▬▬▬▬▬
+   // HOA ANH DAO
+//▬▬▬▬▬▬▬▬▬▬
+
+/*
+var stop, staticx;
+var img = new Image();
+img.src = "https://i.imgur.com/R9XUjfF.png";
+
+			function Sakura(x, y, s, r, fn) {
+				this.x = x;
+				this.y = y;
+				this.s = s;
+				this.r = r;
+				this.fn = fn;
+			}
+
+			Sakura.prototype.draw = function(cxt) {
+				cxt.save();
+				var xc = 40 * this.s / 4;
+				cxt.translate(this.x, this.y);
+				cxt.rotate(this.r);
+				cxt.drawImage(img, 0, 0, 40 * this.s, 40 * this.s)
+				cxt.restore();
+			}
+
+			Sakura.prototype.update = function() {
+				this.x = this.fn.x(this.x, this.y);
+				this.y = this.fn.y(this.y, this.y);
+				this.r = this.fn.r(this.r);
+				if(this.x > window.innerWidth ||
+					this.x < 0 ||
+					this.y > window.innerHeight ||
+					this.y < 0
+				) {
+					this.r = getRandom('fnr');
+					if(Math.random() > 0.4) {
+						this.x = getRandom('x');
+						this.y = 0;
+						this.s = getRandom('s');
+						this.r = getRandom('r');
+					} else {
+						this.x = window.innerWidth;
+						this.y = getRandom('y');
+						this.s = getRandom('s');
+						this.r = getRandom('r');
+					}
+				}
+			}
+
+			SakuraList = function() {
+				this.list = [];
+			}
+			SakuraList.prototype.push = function(sakura) {
+				this.list.push(sakura);
+			}
+			SakuraList.prototype.update = function() {
+				for(var i = 0, len = this.list.length; i < len; i++) {
+					this.list[i].update();
+				}
+			}
+			SakuraList.prototype.draw = function(cxt) {
+				for(var i = 0, len = this.list.length; i < len; i++) {
+					this.list[i].draw(cxt);
+				}
+			}
+			SakuraList.prototype.get = function(i) {
+				return this.list[i];
+			}
+			SakuraList.prototype.size = function() {
+				return this.list.length;
+			}
+
+			function getRandom(option) {
+				var ret, random;
+				switch(option) {
+					case 'x':
+						ret = Math.random() * window.innerWidth;
+						break;
+					case 'y':
+						ret = Math.random() * window.innerHeight;
+						break;
+					case 's':
+						ret = Math.random();
+						break;
+					case 'r':
+						ret = Math.random() * 5;
+						break;
+					case 'fnx':
+						random = -0.5 + Math.random() * 1;
+						ret = function(x, y) {
+							return x + 0.5 * random - 1;
+						};
+						break;
+					case 'fny':
+						random = 0.5 + Math.random() * 0.5
+						ret = function(x, y) {
+							return y + random;
+						};
+						break;
+					case 'fnr':
+						random = Math.random() * 0.01;
+						ret = function(r) {
+							return r + random;
+						};
+						break;
+				}
+				return ret;
+			}
+
+			function startSakura() {
+
+				requestAnimationFrame = window.requestAnimationFrame ||
+					window.mozRequestAnimationFrame ||
+					window.webkitRequestAnimationFrame ||
+					window.msRequestAnimationFrame ||
+					window.oRequestAnimationFrame;
+				var canvas = document.createElement('canvas'),
+					cxt;
+				staticx = true;
+				canvas.height = window.innerHeight;
+				canvas.width = window.innerWidth;
+				canvas.setAttribute('style', 'position: fixed;left: 0;top: 0;pointer-events: none;');
+				canvas.setAttribute('id', 'canvas_sakura');
+				document.getElementsByTagName('body')[0].appendChild(canvas);
+				cxt = canvas.getContext('2d');
+				var sakuraList = new SakuraList();
+				for(var i = 0; i < 50; i++) {
+					var sakura, randomX, randomY, randomS, randomR, randomFnx, randomFny;
+					randomX = getRandom('x');
+					randomY = getRandom('y');
+					randomR = getRandom('r');
+					randomS = getRandom('s');
+					randomFnx = getRandom('fnx');
+					randomFny = getRandom('fny');
+					randomFnR = getRandom('fnr');
+					sakura = new Sakura(randomX, randomY, randomS, randomR, {
+						x: randomFnx,
+						y: randomFny,
+						r: randomFnR
+					});
+					sakura.draw(cxt);
+					sakuraList.push(sakura);
+				}
+				stop = requestAnimationFrame(function() {
+					cxt.clearRect(0, 0, canvas.width, canvas.height);
+					sakuraList.update();
+					sakuraList.draw(cxt);
+					stop = requestAnimationFrame(arguments.callee);
+				})
+			}
+
+			window.onresize = function() {
+				var canvasSnow = document.getElementById('canvas_snow');
+				canvasSnow.width = window.innerWidth;
+				canvasSnow.height = window.innerHeight;
+			}
+
+			img.onload = function() {
+				startSakura();
+			}
+
+			function stopp() {
+				if(staticx) {
+					var child = document.getElementById("canvas_sakura");
+					child.parentNode.removeChild(child);
+					window.cancelAnimationFrame(stop);
+					staticx = false;
+				} else {
+					startSakura();
+				}
+			}
+		
+		
+*/
+//////////////////////////////////////////////////////////////
