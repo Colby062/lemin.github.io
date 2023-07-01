@@ -1,7 +1,5 @@
 html,
-body {
-  font-size: 150%;
-}
+body,
 .background {
   margin: 0;
   width: 100%;
@@ -60,7 +58,7 @@ body {
   font-family: 'Whitney', sans-serif;
   font-weight:700;
   color:#fff;
-  font-size:40px
+  font-size:100px
 }
 .background{
   background-image:url(https://raw.githubusercontent.com/lemin62/scripts/main/leminbg.svg);
