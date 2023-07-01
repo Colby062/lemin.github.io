@@ -62,7 +62,7 @@ body,
 }
 .background{
   background-image:url(https://raw.githubusercontent.com/lemin62/scripts/main/leminbg.svg);
-  background-size:25%;
+  background-size:100%;
 }
 .step{
   font-smooth: auto;
