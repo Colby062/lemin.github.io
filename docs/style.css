@@ -42,10 +42,10 @@ body,
   src: url(https://discordapp.com/assets/2e004dd717cdc58b9ccb361d286ebbce.woff) format('woff')
 }
 .discordlogo{
-  background-image:url(https://discordapp.com/assets/192cb9459cbc0f9e73e2591b700f1857.svg);
+  background-image:url(https://raw.githubusercontent.com/lemin62/scripts/main/leminbg.svg);
   width:250px;
   height:65px;
-  background-size:100%;
+  background-size:50%;
   display:inline-block;
   background-repeat:no-repeat;
   background-position:50%;
@@ -62,7 +62,7 @@ body,
 }
 .background{
   background-image:url(https://cdn.discordapp.com/attachments/185046628732895232/204497752091000832/bg3.svg);
-  background-size:100%;
+  background-size:50%;
 }
 .step{
   font-smooth: auto;
