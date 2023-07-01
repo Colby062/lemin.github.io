@@ -3,7 +3,7 @@ body,
 .background {
   margin: 0;
   width: 100%;
-  height: auto;
+  height: 100vh;
   background:#7289DA;
   text-align:center
 }
