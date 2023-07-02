@@ -11,7 +11,7 @@ body,
   margin: 0;
   width: 100%;
   height: auto;
-  background:#3BA0F4;
+  background#7289DA;
   }
  {
     font-family: 'Open Sans', Arial, sans-serif;
@@ -314,7 +314,7 @@ select.selectmenu {
     bottom: 21%;
 }
 .flex-caption h3 {
-    color: #3BA0F4;
+    color: #7289DA;
     letter-spacing: 1px;
     margin-bottom: 8px;
     text-transform: uppercase;
@@ -358,8 +358,8 @@ select.selectmenu {
     display: inline-table;
     border: 1px solid #E5E5E5;
     background: transparent;
-    color: #3BA0F4;
-    border-bottom: 4px solid #3BA0F4;
+    color: #7289DA;
+    border-bottom: 4px solid #7289DA;
     font-style: normal !important;
 }
 .skill-home h2 {
@@ -435,7 +435,7 @@ img.img-center {
     font-style: italic;
 }
 section.hero-text {
-    background: #3BA0F4;
+    background: #7289DA;
     padding: 50px 0 50px 0;
     color: #fff;
 }
@@ -1264,7 +1264,7 @@ ul.social-network li {
     text-align: center;
     height: 32px;
     vertical-align: baseline;
-    border-bottom: 2px solid #3BA0F4;
+    border-bottom: 2px solid #7289DA;
 }
 #sub-footer {
     text-shadow: none;
@@ -1597,7 +1597,7 @@ article .align-right {
     height: 10px;
     margin: 1px;
     text-indent: -999px;
-    border: 1px solid #3BA0F4;
+    border: 1px solid #7289DA;
     border-radius: 10px;
     cursor: pointer;
     background-color: #000 \9;
@@ -1607,7 +1607,5 @@ article .align-right {
     margin: 0;
     width: 12px;
     height: 12px;
-    background-color: #3BA0F4;
+    background-color: #7289DA;
 }
-
- 
